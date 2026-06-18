@@ -25,27 +25,30 @@ jobs:
           npx html-validator -f index.html
 
       - name: Security Scan
-        uses: SonarSource/sonarqube-scan-actions@v8.2.0
+        uses: SonarSource/sonarqube-scan-action@v8.2.0
+        with:
+          projectKey: HP04Harsh_devsecops-pipeline
+          organization: hp04harsh
         env:
           SONAR_TOKEN: ${{secrets.SONAR_TOKEN}}
 
       - name: Quality Gate
-        uses: sonarsource/sonarqube-quality-gate-actions@v1.2.0
+        uses: sonarsource/sonarqube-quality-gate-action@v1.2.0
         with:
           pollingTimeoutSec: 600
         env:
           SONAR_TOKEN: ${{secrets.SONAR_TOKEN}}      
 
       - name: Download and login Docker
-        uses: docker/login-actions@v4.2.0
+        uses: docker/login-action@v4.2.0
         with:
-          usesrname: ${{secrets.usesRNAME}}
+          usesrname: ${{secrets.USERNAME}}
           password: ${{secrets.PASSWORD}}
 
       - name: Build image and publish
         run: |
-          docker build -t {{secrets.usesRNAME}}/mywebapp:v1 .
-          docker push {{secrets.usesRNAME}}/mywebapp:v1
+          docker build -t {{secrets.USERNAME}}/mywebapp:v1 .
+          docker push {{secrets.USERNAME}}/mywebapp:v1
 
 
 

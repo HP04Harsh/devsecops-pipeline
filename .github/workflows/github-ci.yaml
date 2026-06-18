@@ -1,0 +1,51 @@
+name: Github-CI
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  Setup:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18,19,20]
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup node
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{matrix.node-version}}
+
+      - name: Test
+        run: |
+          npm install html-validator-cli
+          npx html-validator -f index.html
+
+      - name: Security Scan
+        uses: SonarSource/sonarqube-scan-actions@v8.2.0
+        env:
+          SONAR_TOKEN: ${{secrets.SONAR_TOKEN}}
+
+      - name: Quality Gate
+        uses: sonarsource/sonarqube-quality-gate-actions@v1.2.0
+        with:
+          pollingTimeoutSec: 600
+        env:
+          SONAR_TOKEN: ${{secrets.SONAR_TOKEN}}      
+
+      - name: Download and login Docker
+        uses: docker/login-actions@v4.2.0
+        with:
+          usesrname: ${{secrets.usesRNAME}}
+          password: ${{secrets.PASSWORD}}
+
+      - name: Build image and publish
+        run: |
+          docker build -t {{secrets.usesRNAME}}/mywebapp:v1 .
+          docker push {{secrets.usesRNAME}}/mywebapp:v1
+
+
+

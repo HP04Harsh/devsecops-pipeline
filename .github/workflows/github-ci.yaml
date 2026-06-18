@@ -22,7 +22,7 @@ jobs:
       - name: Test
         run: |
           npm install html-validator-cli
-          npx html-validator -f index.html
+          npx html-validator --file=index.html
 
       - name: Security Scan
         uses: SonarSource/sonarqube-scan-action@v8.2.0
